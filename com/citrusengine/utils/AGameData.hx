@@ -6,6 +6,7 @@
  */
 package com.citrusengine.utils;
 
+/// has to move to hsl or hxs 
 import org.osflash.signals.Signal;
 
 class AGameData {
