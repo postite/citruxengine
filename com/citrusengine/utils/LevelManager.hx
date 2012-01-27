@@ -32,9 +32,9 @@ package com.citrusengine.utils;
 
 /// move to hsl
 import org.osflash.signals.Signal;
-import flash.display.Loader;
-import flash.events.Event;
-import flash.net.URLRequest;
+import nme.display.Loader;
+import nme.events.Event;
+import nme.net.URLRequest;
 
 class LevelManager {
 	public var levels(getLevels, setLevels) : Array<Dynamic>;
@@ -45,7 +45,7 @@ class LevelManager {
 	public var onLevelChanged : Signal;
 	var _ALevel : Class<Dynamic>;
 	var _levels : Array<Dynamic>;
-	var _currentIndex : UInt;
+	var _currentIndex : Int;
 	var _currentLevel : Dynamic;
 	public function new(ALevel : Class<Dynamic>) {
 		_instance = this;
