@@ -13,7 +13,7 @@
  */
 package com.citrusengine.core;
 
-import starling.core.Starling;
+//import starling.core.Starling;
 import com.citrusengine.utils.AGameData;
 import com.citrusengine.utils.LevelManager;
 import flash.display.MovieClip;
@@ -32,9 +32,9 @@ class CitrusEngine extends MovieClip {
 	public var console(getConsole, never) : Console;
 
 	static public var VERSION : String = "3.00.00 BETA 1";
-	static public var starlingDebugMode : Bool;
+	//static public var starlingDebugMode : Bool;
 	static var _instance : CitrusEngine;
-	var _starling : Starling;
+	//var _starling : Starling;
 	var _levelManager : LevelManager;
 	var _state : IState;
 	var _newState : IState;
@@ -80,12 +80,12 @@ class CitrusEngine extends MovieClip {
 	 * @param debugMode : if true, display a Stats class instance.
 	 * @param antiAliasing : The antialiasing value allows you to set the anti-aliasing (0 - 16), generally a value of 1 is totally acceptable.
 	 */
-	public function setUpStarling(debugMode : Bool = false, antiAliasing : UInt = 1) : Void {
-		starlingDebugMode = debugMode;
-		_starling = new Starling(RootClass, stage);
-		_starling.antiAliasing = antiAliasing;
-		_starling.start();
-	}
+	// public function setUpStarling(debugMode : Bool = false, antiAliasing : UInt = 1) : Void {
+	// 	starlingDebugMode = debugMode;
+	// 	_starling = new Starling(RootClass, stage);
+	// 	_starling.antiAliasing = antiAliasing;
+	// 	_starling.start();
+	// }
 
 	/**
 	 * Return the level manager, use it if you want. Take a look on its class for more information.
@@ -201,11 +201,11 @@ class CitrusEngine extends MovieClip {
 		if(_newState)  {
 			if(_state)  {
 				_state.destroy();
-				if(_starling)  {
-					_starling.stage.removeChild(try cast(_state, StarlingState) catch(e) null);
-					_starling.nativeStage.removeChildAt(1);
-					// Remove Box2D view
-				}
+				// if(_starling)  {
+				// 	_starling.stage.removeChild(try cast(_state, StarlingState) catch(e) null);
+				// 	_starling.nativeStage.removeChildAt(1);
+				// 	// Remove Box2D view
+				// }
 
 				else  {
 					removeChild(try cast(_state, State) catch(e) null);
@@ -214,9 +214,9 @@ class CitrusEngine extends MovieClip {
 			}
 			_state = _newState;
 			_newState = null;
-			if(_starling)  {
-				_starling.stage.addChildAt(try cast(_state, StarlingState) catch(e) null, _stateDisplayIndex);
-			}
+			// if(_starling)  {
+			// 	_starling.stage.addChildAt(try cast(_state, StarlingState) catch(e) null, _stateDisplayIndex);
+			// }
 
 			else  {
 				addChildAt(try cast(_state, State) catch(e) null, _stateDisplayIndex);
@@ -235,14 +235,14 @@ class CitrusEngine extends MovieClip {
 
 	function handleStageDeactivated(e : Event) : Void {
 		if(_playing)  {
-			if(_starling) _starling.stop();
+			//if(_starling) _starling.stop();
 			playing = false;
 			stage.addEventListener(Event.ACTIVATE, handleStageActivated);
 		}
 	}
 
 	function handleStageActivated(e : Event) : Void {
-		if(_starling) _starling.start();
+		//if(_starling) _starling.start();
 		playing = true;
 		stage.removeEventListener(Event.ACTIVATE, handleStageActivated);
 	}
@@ -277,7 +277,7 @@ class CitrusEngine extends MovieClip {
 class RootClass extends Sprite {
 
 	public function new() {
-		if(CitrusEngine.starlingDebugMode) addChild(new Stats());
+		//if(CitrusEngine.starlingDebugMode) addChild(new Stats());
 	}
 
 }
