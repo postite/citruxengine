@@ -228,7 +228,7 @@ class Console extends Sprite {
 		_inputField.width = Lib.current.stage.stageWidth;
 		_inputField.y = 4;
 		_inputField.x = 4;
-		Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, onToggleKeyPress);
+		stage.addEventListener(KeyboardEvent.KEY_UP, onToggleKeyPress);
 	}
 
 	function onConsoleFocusOut(event : FocusEvent) : Void {
@@ -243,18 +243,15 @@ class Console extends Sprite {
 
 	function onKeyPressInConsole(event : KeyboardEvent) : Void {
 		if(event.keyCode == _executeKey)  {
-			if(_inputField.text == "" || _inputField.text == " ") return ;
+			if(_inputField.text == "" || _inputField.text == " ") return;
 			addCommandToHistory(_inputField.text);
 			var args : Array<Dynamic> = _inputField.text.split(" ");
 			var command : String = args.shift();
 			clearConsole();
 			hideConsole();
-			//PORTODO Dictionary
 			var func : Function = _commandDelegates[command];
 			if(func != null)  {
 				try {
-
-					//PORTODO callmethod?
 					func.apply(this, args);
 				}
 				catch(e : ArgumentError) {
@@ -262,12 +259,8 @@ class Console extends Sprite {
 ;
 					 {
 						trace(e.message);
-
-						//PORTODO lastIndexOf?
-						var expected : Float = Std.parseFloat(e.message.slice(e.message.indexOf("Expected ") + 9, e.message.lastIndexOf(","))) 
-						/* WARNING check type */;
+						var expected : Float = Std.parseFloat(e.message.slice(e.message.indexOf("Expected ") + 9, e.message.lastIndexOf(","))) /* WARNING check type */;
 						var lessArgs : Array<Dynamic> = args.slice(0, expected);
-						//PORTODO callmethod?
 						func.apply(this, lessArgs);
 					}
 
