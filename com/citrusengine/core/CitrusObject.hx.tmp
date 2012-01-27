@@ -44,23 +44,17 @@ class CitrusObject {
 	 */
 	public function update(timeDelta : Float) : Void {
 	}
-	
+
 	/**
 	 * The constructor usually calls this.
 	 */
-
 	function setParams(object : Dynamic) : Void {
 		for(param in Reflect.fields(object)) {
 			try {
-				if( Reflect.field(object,param)=="true")
-				Reflect.setField(object,param,true);
-				
-
-				else if( Reflect.field(object,param)=="false")
-				Reflect.setField(object,param,false);
-				
-				else Reflect.setField(this,param,Reflect.field(object,param));
-				
+				if( Reflect.
+				if(object[param] == "true") this[param] = true
+				else if(object[param] == "false") this[param] = false
+				else this[param] = object[param];
 			}
 			catch(e : Error) {
 				if(!hideParamWarnings) trace("Warning: The parameter " + param + " does not exist on " + this);
