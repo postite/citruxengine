@@ -31,7 +31,7 @@ class CitrusEngine extends MovieClip {
 	public var sound(getSound, never) : SoundManager;
 	public var console(getConsole, never) : Console;
 
-	static public var VERSION : String = "haxe version 3.00.00 BETA 1";
+	static public var VERSION : String = "haxe nme version 3.00.00 BETA 1";
 	//static public var starlingDebugMode : Bool;
 	static var _instance : CitrusEngine;
 	//var _starling : Starling;
