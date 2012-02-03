@@ -1,6 +1,7 @@
 package com.citrusengine.core;
 
 import flash.events.KeyboardEvent;
+//PORTODO DICTIONARY
 import flash.utils.Dictionary;
 
 class Input {
@@ -51,8 +52,8 @@ class Input {
 	 */
 	public function update() : Void {
 		if(!_enabled) return;
-		for(var key : Dynamic in Reflect.fields(_keys)) {
-			if(_keys[key] == JUST_PRESSED) _keys[key] = DOWN;
+		for(key in Reflect.fields(_keys)) {
+			if(Reflect.field(_keys,key) == JUST_PRESSED) Reflect.setField(_keys,key , DOWN);
 		}
 
 		_keysReleased.length = 0;
@@ -108,8 +109,9 @@ class Input {
 	}
 
 	function onKeyUp(e : KeyboardEvent) : Void {
-		delete;
-		_keys[e.keyCode];
+
+		delete	_keys[e.keyCode];
+
 		_keysReleased.push(e.keyCode);
 	}
 
