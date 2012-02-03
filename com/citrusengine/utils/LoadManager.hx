@@ -6,12 +6,13 @@
  */
 package com.citrusengine.utils;
 
-import starling.display.Sprite;
-import org.osflash.signals.Signal;
+//import starling.display.Sprite;
+//import org.osflash.signals.Signal;
+import hxs.Signal;
 import flash.display.Loader;
-import flash.events.Event;
-import flash.events.IOErrorEvent;
-import flash.events.ProgressEvent;
+import nme.events.Event;
+import nme.events.IOErrorEvent;
+import nme.events.ProgressEvent;
 import flash.utils.Dictionary;
 
 class LoadManager {
@@ -42,7 +43,7 @@ class LoadManager {
 	 */
 	public function getBytesLoaded() : Float {
 		var bytesLoaded : Float = 0;
-		for(var bytes : Float in _bytesLoaded) {
+		for( bytes  in _bytesLoaded) {
 			bytesLoaded += bytes;
 		}
 
@@ -54,7 +55,7 @@ class LoadManager {
 	 */
 	public function getBytesTotal() : Float {
 		var bytesTotal : Float = 1;
-		for(var bytes : Float in _bytesTotal) {
+		for(bytes  in _bytesTotal) {
 			bytesTotal += bytes;
 		}
 
@@ -79,7 +80,7 @@ class LoadManager {
 				_bytesTotal = new Dictionary();
 			}
 			_numLoadersLoading++;
-			loader = ((Std.is(potentialLoader, Loader))) ? try cast(potentialLoader, Loader) catch(e) null : try cast(potentialLoader.loader, Loader) catch(e) null;
+			loader = ((Std.is(potentialLoader, Loader))) ?  cast(potentialLoader, Loader) :  cast(potentialLoader.loader, Loader) ;
 			loader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, handleLoaderProgress);
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleLoaderComplete);
 			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, handleLoaderError);
