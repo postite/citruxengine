@@ -54,6 +54,7 @@ class CitrusView {
 	 * The height of the visible game screen. This will usually be the same as your stage width unless your game has a border.
 	 */
 	public var cameraLensHeight : Float;
+	//PORTODO Dictionary
 	var _viewObjects : Dictionary;
 	var _root : Dynamic;
 	var _viewInterface : Class<Dynamic>;
@@ -95,9 +96,9 @@ class CitrusView {
 	public function addArt(citrusObject : Dynamic) : Void {
 		if(!(Std.is(citrusObject, _viewInterface))) return;
 		var art : Dynamic = createArt(citrusObject);
-		if(art) _viewObjects[citrusObject] = art;
+		if(art!=null) _viewObjects[citrusObject] = art;
 		if(loadManager.onLoadComplete.numListeners > 0) //only do this if someone is listening
-;
+
 		loadManager.add(art);
 	}
 
@@ -108,8 +109,9 @@ class CitrusView {
 	public function removeArt(citrusObject : Dynamic) : Void {
 		if(!(Std.is(citrusObject, _viewInterface))) return;
 		destroyArt(citrusObject);
-		delete;
-		_viewObjects[citrusObject];
+
+		//PORTODO delete
+		Reflect.deleteField(_viewObjects,citrusObject);
 	}
 
 	/**
@@ -135,7 +137,7 @@ class CitrusView {
 	 * @return The CitrusObject associated with the provided art object.
 	 */
 	public function getObjectFromArt(art : Dynamic) : Dynamic {
-		for(var object : Dynamic in Reflect.fields(_viewObjects)) {
+		for( object  in Reflect.fields(_viewObjects)) {
 			if(_viewObjects[object] == art) return object;
 		}
 
