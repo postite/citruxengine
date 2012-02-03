@@ -10,6 +10,7 @@ import flash.utils.Dictionary;
 class SoundManager {
 
 	static var _instance : SoundManager;
+	//PORTODO DICTIONARIES
 	public var sounds : Dictionary;
 	public var currPlayingSounds : Dictionary;
 	public function new(pvt : PrivateClass) {
