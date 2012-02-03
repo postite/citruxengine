@@ -11,9 +11,6 @@
  * RootClass is the root of Starling, it is never destroyed and only accessed through <code>_starling.stage</code>.
  * It may display a Stats class instance which contains Memory & FPS informations.
  */
-
-
- //test recomminting
 package com.citrusengine.core;
 
 //import starling.core.Starling;
@@ -34,7 +31,7 @@ class CitrusEngine extends MovieClip {
 	public var sound(getSound, never) : SoundManager;
 	public var console(getConsole, never) : Console;
 
-	static public var VERSION : String = "haxe nme version 3.00.00 BETA 1";
+	static public var VERSION : String = "haxe version 3.00.00 BETA 1";
 	//static public var starlingDebugMode : Bool;
 	static var _instance : CitrusEngine;
 	//var _starling : Starling;
@@ -204,26 +201,26 @@ class CitrusEngine extends MovieClip {
 		if(_newState!=null)  {
 			if(_state!=null)  {
 				_state.destroy();
-				// if(_starling)  {
-				// 	_starling.stage.removeChild(try cast(_state, StarlingState) catch(e) null);
-				// 	_starling.nativeStage.removeChildAt(1);
-				// 	// Remove Box2D view
-				// }
+				//if(_starling)  {
+					// _starling.stage.removeChild(try cast(_state, StarlingState) catch(e) null);
+					// _starling.nativeStage.removeChildAt(1);
+					// Remove Box2D view
+				
 
-				else  {
+				//}else  {
 					removeChild(cast(_state, State));
-				}
+				//}
 
 			}
 			_state = _newState;
 			_newState = null;
-			// if(_starling)  {
-			// 	_starling.stage.addChildAt(try cast(_state, StarlingState) catch(e) null, _stateDisplayIndex);
-			// }
+			//if(_starling)  {
+				// _starling.stage.addChildAt(try cast(_state, StarlingState) catch(e) null, _stateDisplayIndex);
+			//}
 
-			else  {
+			//}else  {
 				addChildAt(cast(_state, State), _stateDisplayIndex);
-			}
+			//}
 
 			_state.initialize();
 		}
