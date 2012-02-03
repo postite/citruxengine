@@ -11,6 +11,9 @@
  * RootClass is the root of Starling, it is never destroyed and only accessed through <code>_starling.stage</code>.
  * It may display a Stats class instance which contains Memory & FPS informations.
  */
+
+
+ //test recomminting
 package com.citrusengine.core;
 
 //import starling.core.Starling;
