@@ -31,10 +31,16 @@
 package com.citrusengine.utils;
 
 /// move to hsl
-import org.osflash.signals.Signal;
-import nme.display.Loader;
+//import org.osflash.signals.Signal;
 import nme.events.Event;
 import nme.net.URLRequest;
+import nme.display.Loader;
+import hxs.Signal1;
+
+typedef CitrusLevel=Dynamic;
+typedef AbstractctLevel=Class<Dynamic>;
+	
+
 
 class LevelManager {
 	public var levels(getLevels, setLevels) : Array<Dynamic>;
@@ -42,15 +48,16 @@ class LevelManager {
 	public var nameCurrentLevel(getNameCurrentLevel, never) : String;
 
 	static var _instance : LevelManager;
-	public var onLevelChanged : Signal;
-	var _ALevel : Class<Dynamic>;
+	public var onLevelChanged : Signal1<Dynamic>;
+	var _ALevel : AbstractctLevel;
 	var _levels : Array<Dynamic>;
 	var _currentIndex : Int;
 	var _currentLevel : Dynamic;
-	public function new(ALevel : Class<Dynamic>) {
+	public function new(ALevel : AbstractctLevel) {
 		_instance = this;
 		_ALevel = ALevel;
-		onLevelChanged = new Signal(_ALevel);
+		onLevelChanged = new Signal1<Dynamic>();
+
 		_currentIndex = 0;
 	}
 
@@ -59,6 +66,7 @@ class LevelManager {
 	}
 
 	public function destroy() : Void {
+
 		onLevelChanged.removeAll();
 		_currentLevel = null;
 	}
@@ -83,6 +91,8 @@ class LevelManager {
 	 */
 	public function gotoLevel(index : Int = -1) : Void {
 		if(_currentLevel != null)  {
+			//PORTQUESTION pas sur que ça marche ça !
+			// le coup du dynamic imbriqué sans reflect pour le signal !
 			_currentLevel.lvlEnded.remove(_onLevelEnded);
 		}
 		var loader : Loader = new Loader();
@@ -90,15 +100,34 @@ class LevelManager {
 			_currentIndex = index - 1;
 		}
 		if(_levels[_currentIndex][0] == null)  {
-			_currentLevel = _ALevel(new _levels()[_currentIndex]);
-			_currentLevel.lvlEnded.add(_onLevelEnded);
+			//PORTEST  getsion du stockage de class
+			_currentLevel = Type.createInstance(_levels[currentIndex],[]);
+			//_currentLevel = _ALevel(new _levels[_currentIndex]);
+			//end PORTEST
+
+			//PORT SUGGEST 
+			Reflect.field(_currentLevel,"lvEnded").add(_onLevelEnded);
+			//_currentLevel.lvlEnded.add(_onLevelEnded);
+			//END PORTSUGGEST
+
 			onLevelChanged.dispatch(_currentLevel);
 			// It's a SWC ?
 		}
 
 		else if(Std.is(_levels[_currentIndex][1], Class))  {
-			_currentLevel = _ALevel(new _levels()[_currentIndex][0](new _levels()[_currentIndex][1]()));
-			_currentLevel.lvlEnded.add(_onLevelEnded);
+
+			///PORTEST  wat ??????
+			_currentLevel= cast( 
+				Type.createInstance(
+					_levels[_currentIndex][0],
+						[Type.createInstance(_levels[currentIndex][1],[])]
+						),_Alevel);
+			//_currentLevel = cast(new _levels()[_currentIndex][0](new _levels()[_currentIndex][1]()),_ALevel);
+			//end PORTEST 
+			//PORT SUGGEST 
+			Reflect.field(_currentLevel,"lvEnded").add(_onLevelEnded);
+			//_currentLevel.lvlEnded.add(_onLevelEnded);
+			
 			onLevelChanged.dispatch(_currentLevel);
 			// So it's a SWF or XML, we load it
 		}
@@ -111,8 +140,14 @@ class LevelManager {
 	}
 
 	function _levelLoaded(evt : Event) : Void {
-		_currentLevel = _ALevel(new _levels()[_currentIndex][0](evt.target.loader.content));
-		_currentLevel.lvlEnded.add(_onLevelEnded);
+		//PORTEST  getsion du stockage de class
+		_currentLevel= cast (Type.createInstance(_levels[_currentIndex][0],[evt.target.loader.content]),_Alevel);
+		//_currentLevel = _ALevel(new _levels[_currentIndex][0](evt.target.loader.content));
+		//ENDPORTEST
+
+		//PORT SUGGEST 
+			Reflect.field(_currentLevel,"lvEnded").add(_onLevelEnded);
+			//_currentLevel.lvlEnded.add(_onLevelEnded);
 		onLevelChanged.dispatch(_currentLevel);
 		evt.target.removeEventListener(Event.COMPLETE, _levelLoaded);
 		evt.target.loader.unloadAndStop();
