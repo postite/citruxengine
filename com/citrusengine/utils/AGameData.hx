@@ -6,16 +6,16 @@
  */
 package com.citrusengine.utils;
 
-
+import hxs.Signal2;
 /// has to move to hsl or hxs 
-import org.osflash.signals.Signal;
+//import org.osflash.signals.Signal;
 
 class AGameData {
 	public var lives(getLives, setLives) : Int;
 	public var score(getScore, setScore) : Int;
 	public var timeleft(getTimeleft, setTimeleft) : Int;
 
-	public var dataChanged : Signal;
+	public var dataChanged : Signal2<String,Int>;
 	var _lives : Int;
 	var _score : Int;
 	var _timeleft : Int;
@@ -24,7 +24,7 @@ class AGameData {
 		_lives = 3;
 		_score = 0;
 		_timeleft = 300;
-		dataChanged = new Signal(String, Object);
+		dataChanged = new Signal2<String,Int>();
 	}
 
 	public function getLives() : Int {
