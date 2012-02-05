@@ -31,9 +31,17 @@ import nme.text.TextField;
 import nme.text.TextFieldType;
 import nme.text.TextFormat;
 import nme.ui.Keyboard;
-import nme.utils.Dictionary;
+import com.citrusengine.utils.ObjectHash;
+//import nme.utils.Dictionary;
 //PORTODO signals
-import org.osflash.signals.Signal;
+//import org.osflash.signals.Signal;
+import hxs.Signal;
+
+
+//PORTODO temporary tYpedef
+typedef ArgumentError=Dynamic;
+	
+
 
 class Console extends Sprite {
 	public var onShowConsole(getOnShowConsole, never) : Signal;
@@ -50,10 +58,11 @@ class Console extends Sprite {
 	var _historyMax : Float;
 	var _showing : Bool;
 	var _currHistoryIndex : Int;
-	var _numCommandsInHistory : Float;
+	var _numCommandsInHistory : Int;
 
 	//PORTODO Dictionary stuff
-	var _commandDelegates : Dictionary;
+	//could be simpleHash
+	var _commandDelegates : ObjectHash<Dynamic>;
 	var _shared : SharedObject;
 	var _enabled : Bool;
 	//events
@@ -63,20 +72,21 @@ class Console extends Sprite {
 	 * Creates the instance of the console. This is a display object, so it is also added to the stage. 
 	 */
 	public function new(openKey : Int = 9) {
+		super();
 		openKey = 9;
 		_enabled = true;
 		addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 		_shared = SharedObject.getLocal("history");
 		this.openKey = openKey;
-		_executeKey = flash.ui.Keyboard.ENTER;
-		_prevHistoryKey = flash.ui.Keyboard.UP;
-		_nextHistoryKey = flash.ui.Keyboard.DOWN;
+		_executeKey = nme.ui.Keyboard.ENTER;
+		_prevHistoryKey = nme.ui.Keyboard.UP;
+		_nextHistoryKey = nme.ui.Keyboard.DOWN;
 		_historyMax = 25;
 		_showing = false;
 		_currHistoryIndex = 0;
 		_numCommandsInHistory = 0;
-		if(_shared.data.history)  {
-			_commandHistory = cast(_shared.data.history, Array) ;
+		if(_shared.data.history!=null)  {
+			_commandHistory = cast(_shared.data.history, Array<Dynamic>) ;
 			_numCommandsInHistory = _commandHistory.length;
 		}
 
@@ -85,7 +95,7 @@ class Console extends Sprite {
 			_shared.data.history = _commandHistory;
 		}
 
-		_commandDelegates = new Dictionary();
+		_commandDelegates = new ObjectHash<Dynamic>();
 		_inputField = cast(addChild(new TextField()), TextField) ;
 		_inputField.type = TextFieldType.INPUT;
 		_inputField.addEventListener(FocusEvent.FOCUS_OUT, onConsoleFocusOut);
@@ -154,9 +164,11 @@ class Console extends Sprite {
 	 * @param func The handler function that will get called when the command is executed. This function should accept the commands parameters as arguments.
 	 * 
 	 */
-	public function addCommand(name : String, func : Function) : Void {
+	 //PORTODO get Type of function ?
+	public function addCommand(name : String, func :Dynamic /* Function*/) : Void {
 		//PORTODO dictionary
-		_commandDelegates[name] = func;
+		_commandDelegates.set(name,func);
+		//_commandDelegates[name] = func;
 	}
 
 	public function addCommandToHistory(command : String) : Void {
@@ -212,7 +224,7 @@ class Console extends Sprite {
 		if(_showing)  {
 			_showing = false;
 			visible = false;
-			Lib.current.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyPressInConsole);
+			this.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyPressInConsole);
 			_onHideConsole.dispatch();
 		}
 	}
@@ -223,12 +235,12 @@ class Console extends Sprite {
 
 	function onAddedToStage(event : Event) : Void {
 		graphics.beginFill(0x000000, .8);
-		graphics.drawRect(0, 0, Lib.current.stage.stageWidth, 30);
+		graphics.drawRect(0, 0, this.stage.stageWidth, 30);
 		graphics.endFill();
-		_inputField.width = Lib.current.stage.stageWidth;
+		_inputField.width = this.stage.stageWidth;
 		_inputField.y = 4;
 		_inputField.x = 4;
-		Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, onToggleKeyPress);
+		this.stage.addEventListener(KeyboardEvent.KEY_UP, onToggleKeyPress);
 	}
 
 	function onConsoleFocusOut(event : FocusEvent) : Void {
@@ -236,13 +248,13 @@ class Console extends Sprite {
 	}
 
 	function onToggleKeyPress(event : KeyboardEvent) : Void {
-		if(event.keyCode == openKey)  {
+		if(cast(event.keyCode,Int) == openKey)  {
 			toggleConsole();
 		}
 	}
 
 	function onKeyPressInConsole(event : KeyboardEvent) : Void {
-		if(event.keyCode == _executeKey)  {
+		if(cast (event.keyCode,Int) == _executeKey)  {
 			if(_inputField.text == "" || _inputField.text == " ") return ;
 			addCommandToHistory(_inputField.text);
 			var args : Array<Dynamic> = _inputField.text.split(" ");
@@ -250,7 +262,7 @@ class Console extends Sprite {
 			clearConsole();
 			hideConsole();
 			//PORTODO Dictionary
-			var func : Function = _commandDelegates[command];
+			var func = _commandDelegates.get(command);
 			if(func != null)  {
 				try {
 
@@ -259,12 +271,12 @@ class Console extends Sprite {
 				}
 				catch(e : ArgumentError) {
 					if(e.errorID == 1063) //Argument count mismatch on [some function]. Expected [x], got [y]
-;
+
 					 {
 						trace(e.message);
 
 						//PORTODO lastIndexOf?
-						var expected : Float = Std.parseFloat(e.message.slice(e.message.indexOf("Expected ") + 9, e.message.lastIndexOf(","))) 
+						var expected : Int = Std.parseInt(e.message.slice(e.message.indexOf("Expected ") + 9, e.message.lastIndexOf(","))) 
 						/* WARNING check type */;
 						var lessArgs : Array<Dynamic> = args.slice(0, expected);
 						//PORTODO callmethod?
@@ -276,13 +288,13 @@ class Console extends Sprite {
 			}
 		}
 
-		else if(event.keyCode == _prevHistoryKey)  {
+		else if(cast (event.keyCode,Int) == _prevHistoryKey)  {
 			_inputField.text = getPreviousHistoryCommand();
 			event.preventDefault();
 			_inputField.setSelection(_inputField.text.length, _inputField.text.length);
 		}
 
-		else if(event.keyCode == _nextHistoryKey)  {
+		else if(cast (event.keyCode,Int) == _nextHistoryKey)  {
 			_inputField.text = getNextHistoryCommand();
 			event.preventDefault();
 			_inputField.setSelection(_inputField.text.length, _inputField.text.length);
