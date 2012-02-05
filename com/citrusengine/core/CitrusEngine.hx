@@ -17,7 +17,11 @@ package com.citrusengine.core;
 import com.citrusengine.utils.AGameData;
 import com.citrusengine.utils.LevelManager;
 import nme.display.MovieClip;
+import nme.display.StageScaleMode;
+import nme.display.StageAlign;
 import nme.events.Event;
+import nme.display.Sprite;
+import nme.Lib;
 //import starling.display.Sprite;
 //import starling.extensions.utils.Stats;
 import com.citrusengine.core.CitrusEngine;
@@ -54,6 +58,7 @@ class CitrusEngine extends MovieClip {
 	 * Flash's innards should be calling this, because you should be extending your document class with it.
 	 */
 	public function new() {
+		super();
 		_stateDisplayIndex = 0;
 		_playing = true;
 		_instance = this;
@@ -64,7 +69,7 @@ class CitrusEngine extends MovieClip {
 		_console.addCommand("set", handleConsoleSetCommand);
 		addChild(_console);
 		//timekeeping
-		_startTime = new Date().time;
+		_startTime = Date.now().getTime();
 		_gameTime = _startTime;
 		//Set up input
 		_input = new Input();
@@ -108,7 +113,7 @@ class CitrusEngine extends MovieClip {
 	 * That way you don't end up changing states in the middle of a state's tick, effectively fucking stuff up. 
 	 */
 	public function getState() : IState {
-		if(_newState) return _newState
+		if(_newState!=null) return _newState
 		else  {
 			return _state;
 		}
@@ -134,7 +139,8 @@ class CitrusEngine extends MovieClip {
 
 	public function setPlaying(value : Bool) : Bool {
 		_playing = value;
-		if(_playing) _gameTime = new Date().time;
+		if(_playing) _gameTime = Date.now().getTime();
+		
 		return value;
 	}
 
@@ -186,8 +192,8 @@ class CitrusEngine extends MovieClip {
 	 */
 	function handleAddedToStage(e : Event) : Void {
 		removeEventListener(Event.ADDED_TO_STAGE, handleAddedToStage);
-		Lib.current.stage.scaleMode = "noScale";
-		Lib.current.stage.align = "topLeft";
+		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
+		Lib.current.stage.align = StageAlign.TOP_LEFT;
 		Lib.current.stage.addEventListener(Event.DEACTIVATE, handleStageDeactivated);
 		_input.initialize();
 	}
@@ -225,7 +231,7 @@ class CitrusEngine extends MovieClip {
 			_state.initialize();
 		}
 		if(_state!=null && _playing)  {
-			var nowTime : Float = new Date().time;
+			var nowTime : Float = Date.now().getTime();
 			var timeSinceLastFrame : Float = nowTime - _gameTime;
 			var timeDelta : Float = timeSinceLastFrame * 0.001;
 			_gameTime = nowTime;
@@ -268,7 +274,10 @@ class CitrusEngine extends MovieClip {
 		if(paramValue == "true") value = true
 		else if(paramValue == "false") value = false
 		else value = paramValue;
-		if(object.hasOwnProperty(paramName)) object[paramName] = value
+		//portodo hasOwnproperty issue
+		if(untyped object.hasOwnProperty(paramName))
+		Reflect.setField(object,paramName,value);
+		// object[paramName] = value
 		else trace("Warning: " + objectName + " has no parameter named " + paramName + ".");
 	}
 
@@ -278,6 +287,7 @@ class RootClass extends Sprite {
 
 	public function new() {
 		//if(CitrusEngine.starlingDebugMode) addChild(new Stats());
+		super();
 	}
 
 }
