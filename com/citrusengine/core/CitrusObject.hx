@@ -62,7 +62,7 @@ class CitrusObject {
 				else Reflect.setField(this,param,Reflect.field(object,param));
 				
 			}
-			catch(e : Error) {
+			catch(e:Dynamic ) {
 				if(!hideParamWarnings) trace("Warning: The parameter " + param + " does not exist on " + this);
 			}
 
