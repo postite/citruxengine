@@ -25,7 +25,7 @@ import flash.display.Sprite;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.net.URLRequest;
-import flash.utils.GetDefinitionByName;
+//import flash.utils.GetDefinitionByName;
 
 class SpriteArt extends Sprite {
 	public var registration(getRegistration, setRegistration) : String;
@@ -51,6 +51,7 @@ class SpriteArt extends Sprite {
 	var _animation : String;
 	var _group : Int;
 	public function new(object : ISpriteView) {
+		super();
 		_citrusObject = object;
 	}
 
@@ -59,7 +60,7 @@ class SpriteArt extends Sprite {
 	}
 
 	public function setRegistration(value : String) : String {
-		if(_registration == value || !content) return;
+		if(_registration == value || content==null) return "";
 		_registration = value;
 		if(_registration == "topLeft")  {
 			content.x = 0;
@@ -84,7 +85,9 @@ class SpriteArt extends Sprite {
 			if(Std.is(_view, String))  {
 				// view property is a path to an image?
 				var classString : String = _view;
-				var suffix : String = classString.substring(classString.length - 4).toLowerCase();
+				//PORTTODO substring
+				
+				var suffix : String = classString.substr(classString.length - 4).toLowerCase();
 				if(suffix == ".swf" || suffix == ".png" || suffix == ".gif" || suffix == ".jpg")  {
 					loader = new Loader();
 					addChild(loader);
@@ -94,8 +97,8 @@ class SpriteArt extends Sprite {
 				}
 
 				else  {
-					var artClass : Class<Dynamic> = Type.getClass(getDefinitionByName(classString));
-					content = new ArtClass();
+					var artClass : Class<Dynamic> = Type.getClass(classString);
+					content = Type.createInstance(artClass,[]);
 					addChild(content);
 				}
 
@@ -103,16 +106,20 @@ class SpriteArt extends Sprite {
 
 			else if(Std.is(_view, Class))  {
 				//view property is a class reference
-				content = new citrusobject.View();
+				content = Type.createInstance( citrusObject.view(),[]);
 				addChild(content);
 			}
 
 			else  {
-				throw new Error("SpriteArt doesn't know how to create a graphic object from the provided CitrusObject " + citrusObject);
+				throw ("SpriteArt doesn't know how to create a graphic object from the provided CitrusObject " + citrusObject);
 				return;
 			}
-
-			if(content && content.hasOwnProperty("initialize")) content["initialize"](_citrusObject);
+//PORTODO hasownpropertey
+			if(content!=null && untyped content.hasOwnProperty("initialize"))
+			
+			//PORTODO REFLECT cALLMETHOD
+			Reflect.callMethod(content,Reflect.field(content, "initialize"),[_citrusObject]);
+			 //content["initialize"](_citrusObject);
 		}
 		return value;
 	}
@@ -122,10 +129,10 @@ class SpriteArt extends Sprite {
 	}
 
 	public function setAnimation(value : String) : String {
-		if(_animation == value) return;
+		if(_animation == value) return "";
 		_animation = value;
 		if(Std.is(content, MovieClip))  {
-			var mc : MovieClip = try cast(content, MovieClip) catch(e) null;
+			var mc : MovieClip =  cast(content, MovieClip) ;
 			if(_animation != null && _animation != "" && hasAnimation(_animation)) mc.gotoAndStop(_animation);
 		}
 		return value;
@@ -158,7 +165,7 @@ class SpriteArt extends Sprite {
 	}
 
 	public function hasAnimation(animation : String) : Bool {
-		for(var anim : FrameLabel in cast((content), MovieClip).currentLabels) {
+		for( anim  in cast(content, MovieClip).currentLabels) {
 			if(anim.name == animation) return true;
 		}
 
@@ -171,7 +178,7 @@ class SpriteArt extends Sprite {
 	}
 
 	function handleContentIOError(e : IOErrorEvent) : Void {
-		throw new Error(e.text);
+		throw (e.text);
 	}
 
 }
