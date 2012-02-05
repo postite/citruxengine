@@ -16,7 +16,7 @@ interface ISpriteView {
 	var y(getY, never) : Float;
 	var parallax(getParallax, never) : Float;
 	var rotation(getRotation, never) : Float;
-	var group(getGroup, never) : Float;
+	var group(getGroup, never) : Int;
 	var visible(getVisible, never) : Bool;
 	var view(getView, never) : Dynamic;
 	var animation(getAnimation, never) : String;
@@ -49,7 +49,7 @@ interface ISpriteView {
 	 * Note that groups and parallax are unrelated, so be careful not to have an object have a lower parallax value than an object 
 	 * in a group below it.
 	 */
-	function getGroup() : Float;
+	function getGroup() : Int;
 	/**
 	 * The visibility of the object. 
 	 */
