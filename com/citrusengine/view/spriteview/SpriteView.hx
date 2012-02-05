@@ -40,15 +40,15 @@ class SpriteView extends CitrusView {
 			_viewRoot.x += velocityX;
 			_viewRoot.y += velocityY;
 			//Constrain to camera bounds
-			if(cameraBounds)  {
+			if(cameraBounds!=null)  {
 				if(-_viewRoot.x <= cameraBounds.left || cameraBounds.width < cameraLensWidth) _viewRoot.x = -cameraBounds.left
 				else if(-_viewRoot.x + cameraLensWidth >= cameraBounds.right) _viewRoot.x = -cameraBounds.right + cameraLensWidth;
 				if(-_viewRoot.y <= cameraBounds.top || cameraBounds.height < cameraLensHeight) _viewRoot.y = -cameraBounds.top
 				else if(-_viewRoot.y + cameraLensHeight >= cameraBounds.bottom) _viewRoot.y = -cameraBounds.bottom + cameraLensHeight;
 			}
 		}
-		for(var sprite : SpriteArt in _viewObjects) {
-			if(sprite.group != sprite.citrusObject.group) updateGroupForSprite(sprite);
+		for(sprite  in _viewObjects) {
+			if(cast(sprite).group !=  cast (sprite).citrusObject.group) updateGroupForSprite(sprite);
 			sprite.update(this);
 		}
 
@@ -58,7 +58,7 @@ class SpriteView extends CitrusView {
 	 * @inherit 
 	 */
 	override function createArt(citrusObject : Dynamic) : Dynamic {
-		var viewObject : ISpriteView = try cast(citrusObject, ISpriteView) catch(e) null;
+		var viewObject : ISpriteView = cast(citrusObject, ISpriteView) ;
 		var art : SpriteArt = new SpriteArt(viewObject);
 		//Perform an initial update
 		art.update(this);
@@ -70,7 +70,7 @@ class SpriteView extends CitrusView {
 	 * @inherit 
 	 */
 	override function destroyArt(citrusObject : Dynamic) : Void {
-		var spriteArt : SpriteArt = _viewObjects[citrusObject];
+		var spriteArt : SpriteArt = _viewObjects.get(citrusObject);
 		spriteArt.parent.removeChild(spriteArt);
 	}
 
