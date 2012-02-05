@@ -14,22 +14,24 @@ import nme.events.Event;
 import nme.events.IOErrorEvent;
 import nme.events.ProgressEvent;
 import flash.utils.Dictionary;
+import com.citrusengine.utils.ObjectHash;
+import nme.display.Sprite;
 
 class LoadManager {
 	public var bytesLoaded(getBytesLoaded, never) : Float;
 	public var bytesTotal(getBytesTotal, never) : Float;
 
 	public var onLoadComplete : Signal;
-	var _bytesLoaded : Dictionary;
-	var _bytesTotal : Dictionary;
+	var _bytesLoaded : ObjectHash<Dynamic>;
+	var _bytesTotal : ObjectHash<Dynamic>;
 	var _numLoadersLoading : Float;
 	/**
 	 * Creates a new LoadManager instance. The CitrusView does this for you. You can access the created LoadManager view the 
 	 * CitrusView object. 
 	 */
 	public function new() {
-		_bytesLoaded = new Dictionary();
-		_bytesTotal = new Dictionary();
+		_bytesLoaded = new ObjectHash<Dynamic>();
+		_bytesTotal = new ObjectHash<Dynamic>();
 		_numLoadersLoading = 0;
 		onLoadComplete = new Signal();
 	}
@@ -42,7 +44,7 @@ class LoadManager {
 	 * Returns the sum of all the bytes that have been loaded by the current view. 
 	 */
 	public function getBytesLoaded() : Float {
-		var bytesLoaded : Float = 0;
+		var bytesLoaded : Int = 0;
 		for( bytes  in _bytesLoaded) {
 			bytesLoaded += bytes;
 		}
@@ -54,7 +56,7 @@ class LoadManager {
 	 * Returns the sum of all the bytes that will need to be loaded by the current view. 
 	 */
 	public function getBytesTotal() : Float {
-		var bytesTotal : Float = 1;
+		var bytesTotal : Int = 1;
 		for(bytes  in _bytesTotal) {
 			bytesTotal += bytes;
 		}
@@ -73,28 +75,31 @@ class LoadManager {
 	 */
 	public function add(potentialLoader : Dynamic, recursionDepth : Float = 1) : Bool {
 		var loader : Loader;
-		if(Std.is(potentialLoader, Loader || (Std.is(potentialLoader, Sprite && potentialLoader.loader))))  {
+		if(Std.is(potentialLoader, Loader) || Std.is(potentialLoader, Sprite) && potentialLoader.loader!=null)  {
 			// We found our first loader, so reset the bytesLoaded/Total dictionaries to get a fresh count.
 			if(_numLoadersLoading == 0)  {
-				_bytesLoaded = new Dictionary();
-				_bytesTotal = new Dictionary();
+				_bytesLoaded = new ObjectHash<Dynamic>();
+				_bytesTotal = new ObjectHash<Dynamic>();
 			}
 			_numLoadersLoading++;
 			loader = ((Std.is(potentialLoader, Loader))) ?  cast(potentialLoader, Loader) :  cast(potentialLoader.loader, Loader) ;
 			loader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, handleLoaderProgress);
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleLoaderComplete);
 			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, handleLoaderError);
-			_bytesLoaded[loader] = 0;
-			_bytesTotal[loader] = 0;
+			_bytesLoaded.set(loader,  0);
+			_bytesTotal.set(loader, 0);
 			return true;
 		}
 
-		else if(Std.is(potentialLoader, flash.display.Sprite))  {
-			var searchDepth : Float = searchDepth - 1;
-			var n : Float = flash.display.Sprite(potentialLoader).numChildren;
+		else if(Std.is(potentialLoader, Sprite))  {
+
+			//PORTODO search depth ???? WTF ???
+var searchDepth:Float=-1;
+			//var searchDepth : Float = searchDepth - 1;
+			var n : Float = cast (potentialLoader,Sprite).numChildren;
 			var i : Int = 0;
 			while(i < n) {
-				var found : Bool = add(flash.display.Sprite(potentialLoader).getChildAt(i), searchDepth);
+				var found : Bool = add(cast(potentialLoader,Sprite).getChildAt(i), searchDepth);
 				if(found) return true;
 				i++;
 			}
@@ -104,15 +109,15 @@ class LoadManager {
 	}
 
 	function handleLoaderProgress(e : ProgressEvent) : Void {
-		_bytesLoaded[e.target.loader] = e.bytesLoaded;
-		_bytesTotal[e.target.loader] = e.bytesTotal;
+		_bytesLoaded.set(e.target.loader, e.bytesLoaded);
+		_bytesTotal.set(e.target.loader, e.bytesTotal);
 	}
 
 	function handleLoaderComplete(e : Event) : Void {
 		e.target.loader.contentLoaderInfo.removeEventListener(ProgressEvent.PROGRESS, handleLoaderProgress);
 		e.target.loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, handleLoaderComplete);
 		e.target.loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, handleLoaderError);
-		_bytesLoaded[e.target.loader] = _bytesTotal[e.target.loader];
+		_bytesLoaded.set(e.target.loader, _bytesTotal.get(e.target.loader));
 		_numLoadersLoading--;
 		if(_numLoadersLoading == 0) onLoadComplete.dispatch();
 	}
