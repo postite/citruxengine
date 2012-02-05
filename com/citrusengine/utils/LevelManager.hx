@@ -101,7 +101,7 @@ class LevelManager {
 		}
 		if(_levels[_currentIndex][0] == null)  {
 			//PORTEST  getsion du stockage de class
-			_currentLevel = Type.createInstance(_levels[currentIndex],[]);
+			_currentLevel = Type.createInstance(_levels[_currentIndex],[]);
 			//_currentLevel = _ALevel(new _levels[_currentIndex]);
 			//end PORTEST
 
@@ -120,8 +120,8 @@ class LevelManager {
 			_currentLevel= cast( 
 				Type.createInstance(
 					_levels[_currentIndex][0],
-						[Type.createInstance(_levels[currentIndex][1],[])]
-						),_Alevel);
+						[Type.createInstance(_levels[_currentIndex][1],[])]
+						));
 			//_currentLevel = cast(new _levels()[_currentIndex][0](new _levels()[_currentIndex][1]()),_ALevel);
 			//end PORTEST 
 			//PORT SUGGEST 
@@ -141,7 +141,7 @@ class LevelManager {
 
 	function _levelLoaded(evt : Event) : Void {
 		//PORTEST  getsion du stockage de class
-		_currentLevel= cast (Type.createInstance(_levels[_currentIndex][0],[evt.target.loader.content]),_Alevel);
+		_currentLevel= cast (Type.createInstance(_levels[_currentIndex][0],[evt.target.loader.content]));
 		//_currentLevel = _ALevel(new _levels[_currentIndex][0](evt.target.loader.content));
 		//ENDPORTEST
 
