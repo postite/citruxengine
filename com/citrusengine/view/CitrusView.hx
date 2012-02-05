@@ -13,6 +13,7 @@ package com.citrusengine.view;
 import com.citrusengine.core.CitrusEngine;
 import com.citrusengine.math.MathVector;
 import com.citrusengine.utils.LoadManager;
+import com.citrusengine.utils.ObjectHash;
 import flash.geom.Rectangle;
 import flash.utils.Dictionary;
 
@@ -55,7 +56,7 @@ class CitrusView {
 	 */
 	public var cameraLensHeight : Float;
 	//PORTODO Dictionary
-	var _viewObjects : Dictionary;
+	var _viewObjects : ObjectHash<Dynamic>;
 	var _root : Dynamic;
 	var _viewInterface : Class<Dynamic>;
 	/**
@@ -67,7 +68,7 @@ class CitrusView {
 	public function new(root : Dynamic, viewInterface : Class<Dynamic>) {
 		cameraOffset = new MathVector();
 		cameraEasing = new MathVector(0.25, 0.05);
-		_viewObjects = new Dictionary();
+		_viewObjects = new ObjectHash<Dynamic>();
 		_root = root;
 		_viewInterface = viewInterface;
 		var ce : CitrusEngine = CitrusEngine.getInstance();
@@ -96,8 +97,13 @@ class CitrusView {
 	public function addArt(citrusObject : Dynamic) : Void {
 		if(!(Std.is(citrusObject, _viewInterface))) return;
 		var art : Dynamic = createArt(citrusObject);
-		if(art!=null) _viewObjects[citrusObject] = art;
-		if(loadManager.onLoadComplete.numListeners > 0) //only do this if someone is listening
+		if(art!=null) _viewObjects.set(citrusObject ,art);
+
+		//PORTODO numlisteners
+		//HACK 
+		var listeners= Reflect.field(loadManager.onLoadComplete,"slots");
+		var numListeners=Reflect.field(listeners,"length");
+		if(numListeners > 0) //only do this if someone is listening
 
 		loadManager.add(art);
 	}
@@ -124,10 +130,10 @@ class CitrusView {
 	 */
 	public function getArt(citrusObject : Dynamic) : Dynamic {
 		if(Std.is(!citrusObject, _viewInterface))  {
-			throw new Error("The object " + citrusObject + " does not have a graphical counterpart because it does not implement " + _viewInterface + ".");
+			throw ("The object " + citrusObject + " does not have a graphical counterpart because it does not implement " + _viewInterface + ".");
 			return;
 		}
-		return _viewObjects[citrusObject];
+		return _viewObjects.get(citrusObject);
 	}
 
 	/**
@@ -137,8 +143,8 @@ class CitrusView {
 	 * @return The CitrusObject associated with the provided art object.
 	 */
 	public function getObjectFromArt(art : Dynamic) : Dynamic {
-		for( object  in Reflect.fields(_viewObjects)) {
-			if(_viewObjects[object] == art) return object;
+		for( object  in _viewObjects) {
+			if(_viewObjects.get(object) == art) return object;
 		}
 
 		return null;
@@ -152,10 +158,10 @@ class CitrusView {
 	 * @param easing The x and y percentage of distance that the camera will travel toward the target per tick. Lower numbers are slower. The number should not go beyond 1.
 	 */
 	public function setupCamera(target : Dynamic = null, offset : MathVector = null, bounds : Rectangle = null, easing : MathVector = null) : Void {
-		if(target) cameraTarget = target;
-		if(offset) cameraOffset = offset;
-		if(bounds) cameraBounds = bounds;
-		if(easing) cameraEasing = easing;
+		if(target!=null) cameraTarget = target;
+		if(offset!=null) cameraOffset = offset;
+		if(bounds!=null) cameraBounds = bounds;
+		if(easing!=null) cameraEasing = easing;
 	}
 
 	/**
