@@ -35,6 +35,7 @@ class State extends Sprite, implements IState {
 			_view.removeArt(object);
 			i--;
 		}
+		//PORTODO not sure about length
 		_objects = [];
 		_view.destroy();
 	}
