@@ -9,7 +9,7 @@ package com.citrusengine.core;
 
 import com.citrusengine.view.CitrusView;
 import com.citrusengine.view.spriteview.SpriteView;
-import flash.display.Sprite;
+import nme.display.Sprite;
 
 class State extends Sprite, implements IState {
 	public var view(getView, never) : CitrusView;
@@ -18,6 +18,7 @@ class State extends Sprite, implements IState {
 	var _view : CitrusView;
 	var _input : Input;
 	public function new() {
+		super();
 		_objects = new Array<CitrusObject>();
 	}
 
@@ -26,7 +27,7 @@ class State extends Sprite, implements IState {
 	 */
 	public function destroy() : Void {
 		//Call destroy on all objects, and remove all art from the stage.
-		var n : Float = _objects.length;
+		var n : Int = _objects.length;
 		var i : Int = n - 1;
 		while(i >= 0) {
 			var object : CitrusObject = _objects[i];
@@ -34,7 +35,7 @@ class State extends Sprite, implements IState {
 			_view.removeArt(object);
 			i--;
 		}
-		_objects.length = 0;
+		_objects = [];
 		_view.destroy();
 	}
 
@@ -77,7 +78,7 @@ class State extends Sprite, implements IState {
 		i = 0;
 		while(i < n) {
 			var garbageObject : CitrusObject = garbage[i];
-			_objects.splice(_objects.indexOf(garbageObject), 1);
+			_objects.splice(Lambda.indexOf(_objects,garbageObject), 1);
 			garbageObject.destroy();
 			_view.removeArt(garbageObject);
 			i++;
@@ -113,7 +114,7 @@ class State extends Sprite, implements IState {
 	 * @param name The name property of the object you want to get a reference to.
 	 */
 	public function getObjectByName(name : String) : CitrusObject {
-		for(var object : CitrusObject in _objects) {
+		for(object  in _objects) {
 			if(object.name == name) return object;
 		}
 
@@ -126,7 +127,7 @@ class State extends Sprite, implements IState {
 	 * @param type The class of the object you want to get a reference to.
 	 */
 	public function getFirstObjectByType(type : Class<Dynamic>) : CitrusObject {
-		for(var object : CitrusObject in _objects) {
+		for( object  in _objects) {
 			if(Std.is(object, type)) return object;
 		}
 
@@ -140,7 +141,7 @@ class State extends Sprite, implements IState {
 	 */
 	public function getObjectsByType(type : Class<Dynamic>) : Array<CitrusObject> {
 		var objects : Array<CitrusObject> = new Array<CitrusObject>();
-		for(var object : CitrusObject in _objects) {
+		for(object  in _objects) {
 			if(Std.is(object, type))  {
 				objects.push(object);
 			}
